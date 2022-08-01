@@ -18,6 +18,11 @@ const User = sequelize.define(
       type: DataTypes.STRING(200),
       allowNull: false
     },
+    cpf: {
+      type: DataTypes.STRING(14),
+      allowNull: false,
+      unique: true
+    },
     phone: {
       type: DataTypes.STRING(16),
       allowNull: false,
@@ -32,7 +37,7 @@ const User = sequelize.define(
       allowNull: true
     },
     role: {
-      type: DataTypes.STRING, // admin ou customer
+      type: DataTypes.STRING, // admin, customer ou delivery
       allowNull: false,
       defaultValue: 'customer'
     }
