@@ -1,4 +1,4 @@
-import Category from "../models/Category";
+import PaymentMethod from "../models/PaymentMethod";
 
 const get = async (req, res) => {
   try {
@@ -6,7 +6,7 @@ const get = async (req, res) => {
     id = id ? id.toString().replace(/\D/g, '') : null;
 
     if(!id){
-      let response = await Category.findAll({
+      let response = await PaymentMethod.findAll({
         order: [[['id', 'ASC'],]]
       })
 
@@ -24,7 +24,7 @@ const get = async (req, res) => {
       });
     }
 
-    let response = await Category.findOne({
+    let response = await PaymentMethod.findOne({
       where: { id }
     })
 
@@ -50,10 +50,10 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
   try {
-    let {id, name } = req.body;
+    let {id, type } = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
     
-    if(!name) {
+    if(!type) {
       return res.send({
         type: 'error',
         message: `É necessario informar todos os campos para adicionar o registro`
@@ -62,7 +62,7 @@ const persist = async (req, res) => {
     
     // create 
     if(!id){
-      let response = await Category.create( { name } );
+      let response = await PaymentMethod.create( { type } );
       return res.send({
       type: 'success',
       data: response
@@ -70,7 +70,7 @@ const persist = async (req, res) => {
    }
 
   //  update 
-  let response = await Category.findOne({
+  let response = await PaymentMethod.findOne({
     where: {
       id
     }
@@ -114,7 +114,7 @@ const destroy = async (req, res) => {
       })
     }
 
-    let response = await Category.findOne({
+    let response = await PaymentMethod.findOne({
       where: { id }
     })
     if(!response){
@@ -124,7 +124,7 @@ const destroy = async (req, res) => {
       })
     }
     
-    await Category.destroy({
+    await PaymentMethod.destroy({
       where: { id }
     })
 

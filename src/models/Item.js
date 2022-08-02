@@ -22,12 +22,16 @@ const Item = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
+    paranoid: true,
+    deletedAt: 'deleted_at',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }
 );
 Item.belongsTo( Category, {
   as: 'Category',
+  onUpdate: 'NO ACTION',
+  onDelete: 'NO ACTION',
   foreignKey: {
     name: 'idCategory',
     allowNull: false,

@@ -20,6 +20,11 @@ const Address = sequelize.define(
       allowNull: false,
       unique: false
     },
+    address: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      unique: false
+    },
     complement:{
       type: DataTypes.STRING(100),
       allowNull: false,
@@ -30,13 +35,15 @@ const Address = sequelize.define(
       allowNull: false,
       unique: false
     },
-    Description: {
+    description: {
       type: DataTypes.STRING(300),
     }
   },
   {
     freezeTableName: true,
     timestamps: true,
+    paranoid: true,
+    deletedAt: 'deleted_at',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }
@@ -44,6 +51,8 @@ const Address = sequelize.define(
 
 Address.belongsTo( User, {
   as: 'User',
+  onUpdate: 'NO ACTION',
+  onDelete: 'NO ACTION',
   foreignKey: {
     name: 'idUser',
     allowNull: false,

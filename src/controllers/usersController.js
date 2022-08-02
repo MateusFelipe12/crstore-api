@@ -2,28 +2,49 @@ import User from "../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const getAll = async (req, res) => {
+const get = async (req, res) => {
   try {
-    const response = await User.findAll({
-      order: [['id', 'ASC']]
+    let { id } = req.params;
+
+    if(!id){
+      const response = await User.findAll({
+        order: [['id', 'ASC']]
+      });
+      if(!response.length){
+        return res.send({
+          type: 'error',
+          message: `Não foi encontrado nenhum registro`
+        })
+      };
+      return res.status(200).send({
+        type: 'success', // success, error, warning, info
+        message: 'Registros recuperados com sucesso', // mensagem para o front exibir
+        data: response // json com informações de resposta
+      });
+    }
+
+    const response = await User.findOne({
+      where: {id}
     });
+
     return res.status(200).send({
       type: 'success', // success, error, warning, info
       message: 'Registros recuperados com sucesso', // mensagem para o front exibir
       data: response // json com informações de resposta
     });
+
   } catch (error) {
     return res.status(200).send({
       type: 'error',
       message: 'Ops! Ocorreu um erro!',
-      data: error
+      data:  error.message
     });
   }
 }
 
 const register = async (req, res) => {
   try {
-    let { username, name, phone, password, role } = req.body;
+    let { username, name, cpf, phone, password, role } = req.body;
 
     let userExists = await User.findOne({
       where: {
@@ -43,6 +64,7 @@ const register = async (req, res) => {
     let response = await User.create({
       username,
       name,
+      cpf,
       phone,
       passwordHash,
       role
@@ -53,6 +75,7 @@ const register = async (req, res) => {
       message: 'Usuário cadastrastado com sucesso!',
       data: response
     });
+
   } catch (error) {
     return res.status(200).send({
       type: 'error',
@@ -93,17 +116,56 @@ const login = async (req, res) => {
       message: 'Bem-vindo! Login realizado com sucesso!',
       token
     });
+
   } catch (error) {
     return res.status(200).send({
       type: 'error',
       message: 'Ops! Ocorreu um erro!',
-      data: error
+      data:  error.message
     });
   }
 }
 
+const update = async (req, res) => {
+  try {
+    let dados  = req.body;
+    const authorization = req.headers.authorization;
+
+    if (!authorization) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Token não informado'
+      })
+    }
+    const token = authorization.split(' ')[1] || null;
+    const decodedToken = jwt.decode(token);
+    
+    let response = await User.findOne({
+      where: {id: decodedToken.userId}
+    })
+
+
+
+    Object.keys(response.dataValues).forEach(campo => {
+      response[campo] = dados[campo] ? dados[campo] :  response[campo]
+    })
+    response.save();
+    
+    return res.status(201).send({
+      type: 'success',
+      data: response
+    })
+
+  } catch (error) {
+    return res.status(200).send({
+      type: 'error',
+      data: error.message
+    });
+  }
+}
 export default {
-  getAll,
+  get,
   register,
-  login
+  login,
+  update,
 }

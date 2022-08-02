@@ -17,6 +17,8 @@ const PaymentMethod = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
+    paranoid: true,
+    deletedAt: 'deleted_at',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }

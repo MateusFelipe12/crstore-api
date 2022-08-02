@@ -16,6 +16,8 @@ const OrderItems = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
+    paranoid: true,
+    deletedAt: 'deleted_at',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }
@@ -34,6 +36,8 @@ Order.belongsToMany(Item, {
 Item.belongsToMany(Order, {
   through: OrderItems,
   as: 'orders',
+  onUpdate: 'NO ACTION',
+  onDelete: 'NO ACTION',
   foreignKey: {
     name: 'idItem',
     field: 'id_Item',

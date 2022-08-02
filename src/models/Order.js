@@ -43,12 +43,16 @@ const Order = sequelize.define(
   {
     freezeTableName: true,
     timestamps: true,
+    paranoid: true,
+    deletedAt: 'deleted_at',
     createdAt: 'created_at',
     updatedAt: 'updated_at'
   }
 );
 Order.belongsTo(User, {
   as: 'UserCustumer',
+  onUpdate: 'NO ACTION',
+  onDelete: 'NO ACTION',
   foreignKey: {
     name: 'idUserCustumer',
     allowNull: false,
@@ -57,14 +61,17 @@ Order.belongsTo(User, {
 })
 Order.belongsTo(User, {
   as: 'UserDeliveryMan',
+  onUpdate: 'NO ACTION',
+  onDelete: 'NO ACTION',
   foreignKey: {
     name: 'idUserDeliveryMan',
-    allowNull: false,
     field: 'id_user'
   }
 })
 Order.belongsTo(PaymentMethod, {
   as: 'PaymentMethod',
+  onUpdate: 'NO ACTION',
+  onDelete: 'NO ACTION',
   foreignKey: {
     name: 'IdPaymentMethod',
     allowNull: false,

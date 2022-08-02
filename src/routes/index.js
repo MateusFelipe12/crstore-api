@@ -1,11 +1,16 @@
 import usersRoute from "./usersRoute";
 import itemsRoute from "./itemsRoute";
-import category from "./categoryRoute";
+import categoryRoute from "./categoryRoute";
+import addressRoute from "./addressRoute";
+import paymentMethodsRoute from "./paymentMethodsRoute";
+
 
 function Routes(app) {
 	usersRoute(app);
 	itemsRoute(app);
-	category(app);
+	categoryRoute(app);
+	addressRoute(app);
+	paymentMethodsRoute(app);
 }
 
 export default Routes;

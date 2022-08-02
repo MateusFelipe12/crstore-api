@@ -1,4 +1,5 @@
-import Category from "../models/Category";
+import Address from "../models/Address";
+import User from "../models/User";
 
 const get = async (req, res) => {
   try {
@@ -6,7 +7,7 @@ const get = async (req, res) => {
     id = id ? id.toString().replace(/\D/g, '') : null;
 
     if(!id){
-      let response = await Category.findAll({
+      let response = await Address.findAll({
         order: [[['id', 'ASC'],]]
       })
 
@@ -24,7 +25,7 @@ const get = async (req, res) => {
       });
     }
 
-    let response = await Category.findOne({
+    let response = await Address.findOne({
       where: { id }
     })
 
@@ -50,19 +51,30 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
   try {
-    let {id, name } = req.body;
+    let {id, idUser, city, district, address, complement, number, description} = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
     
-    if(!name) {
+    let idUserExist = await User.findOne({
+      where: {id: idUser}
+    })
+    if(!idUserExist){
+      return res.send({
+        type: 'error',
+        message: `É necessario informar um usuario valido`
+      });
+    }
+    if(!idUser ||!city || !district || !address ||!complement || !number) {
       return res.send({
         type: 'error',
         message: `É necessario informar todos os campos para adicionar o registro`
       });
     }
-    
+
+    description = description ? description : '';
+
     // create 
     if(!id){
-      let response = await Category.create( { name } );
+      let response = await Address.create( { idUser, city, district, address, complement, number, description } );
       return res.send({
       type: 'success',
       data: response
@@ -70,7 +82,7 @@ const persist = async (req, res) => {
    }
 
   //  update 
-  let response = await Category.findOne({
+  let response = await Address.findOne({
     where: {
       id
     }
@@ -114,7 +126,7 @@ const destroy = async (req, res) => {
       })
     }
 
-    let response = await Category.findOne({
+    let response = await Address.findOne({
       where: { id }
     })
     if(!response){
@@ -124,7 +136,7 @@ const destroy = async (req, res) => {
       })
     }
     
-    await Category.destroy({
+    await Address.destroy({
       where: { id }
     })
 
