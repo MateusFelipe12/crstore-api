@@ -36,7 +36,7 @@ const Order = sequelize.define(
       allowNull: false,
       unique: false
     },
-    Description: {
+    description: {
       type: DataTypes.STRING(300),
     }
   },
@@ -56,7 +56,7 @@ Order.belongsTo(User, {
   foreignKey: {
     name: 'idUserCustumer',
     allowNull: false,
-    field: 'id_user'
+    field: 'id_custumer'
   }
 })
 Order.belongsTo(User, {
@@ -65,7 +65,7 @@ Order.belongsTo(User, {
   onDelete: 'NO ACTION',
   foreignKey: {
     name: 'idUserDeliveryMan',
-    field: 'id_user'
+    field: 'id_delivery_man'
   }
 })
 Order.belongsTo(PaymentMethod, {
@@ -74,7 +74,6 @@ Order.belongsTo(PaymentMethod, {
   onDelete: 'NO ACTION',
   foreignKey: {
     name: 'IdPaymentMethod',
-    allowNull: false,
     field: 'id_payment_method'
   }
 })
