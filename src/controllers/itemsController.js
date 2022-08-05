@@ -88,7 +88,7 @@ const persist = async (req, res) => {
 
   await response.save();
   return res.status(201).send({
-    type: 'error',
+    type: 'success',
     message: `Registro atualizado com sucesso`,
     date: response
   })

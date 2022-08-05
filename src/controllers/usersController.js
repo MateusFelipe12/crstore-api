@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 const get = async (req, res) => {
   try {
     let { id } = req.params;
-
     if(!id){
       const response = await User.findAll({
         order: [['id', 'ASC']]
@@ -55,10 +54,22 @@ const register = async (req, res) => {
     if (userExists) {
       return res.status(200).send({
         type: 'error',
-        message: 'Já existe um usuário cadastrado com esse username!'
+        message: 'Não é possivel utilizar esse usuario!'
       });
     }
 
+    userExists = await User.findOne({
+      where: {
+        cpf
+      }
+    });
+
+    if (userExists) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'CPF invalido, tente novamente'
+      });
+    }
     let passwordHash = await bcrypt.hash(password, 10);
 
     let response = await User.create({
@@ -88,7 +99,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     let { username, password } = req.body;
-
+    console.log(req.body);
     let user = await User.findOne({
       where: {
         username
@@ -114,7 +125,8 @@ const login = async (req, res) => {
     return res.status(200).send({
       type: 'success',
       message: 'Bem-vindo! Login realizado com sucesso!',
-      token
+      token,
+      typeUser: user.role
     });
 
   } catch (error) {
@@ -130,7 +142,7 @@ const update = async (req, res) => {
   try {
     let dados  = req.body;
     const authorization = req.headers.authorization;
-
+    console.log(authorization);
     if (!authorization) {
       return res.status(200).send({
         type: 'error',
