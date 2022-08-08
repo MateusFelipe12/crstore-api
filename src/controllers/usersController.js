@@ -125,7 +125,8 @@ const login = async (req, res) => {
     return res.status(200).send({
       type: 'success',
       message: 'Bem-vindo! Login realizado com sucesso!',
-      token
+      token: token,
+      typeUser : user.role
     });
 
   } catch (error) {
@@ -244,7 +245,7 @@ const newPassword = async (req, res) => {
 }
 const validUser = async (req, res) => {
   try {
-    console.log(`veio ma matei`);
+
     const authorization = req.headers.authorization;
 
     if (!authorization) {
@@ -263,13 +264,14 @@ const validUser = async (req, res) => {
         message: 'Você não tem permissão para acessar esse recurso!'
       })
     }
-
+    
     if (decodedToken.exp < (Date.now() / 1000)) {
       return res.status(200).send({
         type: 'error',
         message: 'Sua sessão expirou! Faça login novamente'
       })
     }
+
     const user = await User.findOne({
       where: {
         id: decodedToken.userId
@@ -282,13 +284,12 @@ const validUser = async (req, res) => {
         message: 'Usuário não encontrado'
       })
     }
-      
-    if (user.role != 'admin') {
+    if (user.role != 'Admin') {
       return res.status(200).send({
         type: 'error',
         message: 'Você não tem permissão para acessar esse recurso!'
       })
-    }
+    } 
 
     return res.status(200).send({
       type: 'success',

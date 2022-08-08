@@ -1,26 +1,21 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config";
-import Category from "./Category";
+import Item from "./Item";
+import Order from "./Order";
+import User from "./User";
 
-const Item = sequelize.define(
-  'items',
+const Cart = sequelize.define(
+  'cart',
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
+    items: {
+      type: DataTypes.JSONB,
+      allowNull: false,
     },
-    price: {
-      type: DataTypes.NUMERIC(15,2),
-      allowNull: false
-    },
-    img: {
-      type: DataTypes.STRING(2000)
-    }
   },
   {
     freezeTableName: true,
@@ -31,14 +26,16 @@ const Item = sequelize.define(
     updatedAt: 'updated_at'
   }
 );
-Item.belongsTo( Category, {
-  as: 'Category',
+
+Cart.belongsTo( User, {
+  as: 'User',
   onUpdate: 'NO ACTION',
   onDelete: 'NO ACTION',
   foreignKey: {
-    name: 'idCategory',
+    name: 'idUser',
     allowNull: false,
-    field: 'id_Category'
+    field: 'id_user'
   }
 })
-export default Item;
+
+export default Cart;

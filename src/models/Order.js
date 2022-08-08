@@ -11,6 +11,9 @@ const Order = sequelize.define(
       primaryKey: true,
       autoIncrement: true
     },
+    valueTotal: {
+      type: DataTypes.NUMERIC(15,2)
+    },
     city: {
       type: DataTypes.STRING(100),
       allowNull: false,

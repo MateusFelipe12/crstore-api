@@ -11,6 +11,19 @@ const OrderItems = sequelize.define(
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
+    },
+    quantity: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
+    },
+    valueUnit: {
+      type: DataTypes.NUMERIC(15,2),
+      allowNull: false,
+    },
+    valueTotal: {
+      type: DataTypes.NUMERIC(15,2),
+      allowNull: false,
     }
   },
   {

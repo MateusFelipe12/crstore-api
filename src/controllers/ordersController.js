@@ -62,7 +62,7 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
 try {
-  let { idItems } = req.body;
+  let { idItems, quantity, valueUnit } = req.body;
   // id = id ? id.toString().replace(/\D/g, '') : null;
   
     const authorization = req.headers.authorization;
@@ -101,6 +101,7 @@ try {
       Description: description
     })
 
+    let valorTotal = 0
     for(let idItem of idItems ) {
       let item = Item.findOne({
         where: {
@@ -114,11 +115,18 @@ try {
           message: `nao exixte um produto com esse id ${idItem}`
         })
       }
-      await OrderItems.create({
+      let valor = (await OrderItems.create({
         idItem,
+        quantity,
+        valueUnit,
+        valueTotal: valueUnit * quantity,
         idOrder: response.id
-      })
+      })).valueTotal
+      valorTotal += valor;
     }
+    response.valueTotal = valorTotal;
+    response.save();
+
     let items = await response.getItems()
     response = response.toJSON()
     response.items = items;

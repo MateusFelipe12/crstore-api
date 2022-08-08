@@ -49,7 +49,7 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
   try {
-    let {id, name, price, idCategory } = req.body;
+    let {id, name, price, idCategory, img} = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
     
     if(!name || !price || !idCategory) {
@@ -61,7 +61,7 @@ const persist = async (req, res) => {
     
     // create 
     if(!id){
-      let response = await Item.create( { name, price, idCategory } );
+      let response = await Item.create( { name, price, idCategory, img } );
       return res.send({
       type: 'success',
       message: 'Registros recuperados com sucesso',
@@ -88,7 +88,7 @@ const persist = async (req, res) => {
 
   await response.save();
   return res.status(201).send({
-    type: 'error',
+    type: 'success',
     message: `Registro atualizado com sucesso`,
     date: response
   })
