@@ -61,6 +61,7 @@ const persist = async (req, res) => {
     
     // create 
     if(!id){
+      console.log(`se fodeu`);
       let response = await Item.create( { name, price, idCategory, img } );
       return res.send({
       type: 'success',

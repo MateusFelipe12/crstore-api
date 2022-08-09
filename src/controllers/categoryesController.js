@@ -4,8 +4,6 @@ const get = async (req, res) => {
   try {
     let { id } = req.params;
     id = id ? id.toString().replace(/\D/g, '') : null;
-
-    console.log(`chegouuu`);
     if(!id){
       let response = await Category.findAll({
         order: [[['id', 'ASC'],]]

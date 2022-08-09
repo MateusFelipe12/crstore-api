@@ -1,11 +1,13 @@
 import Cart from "../models/Cart";
 import cartRoute from "../routes/cartRoute";
+import jwt from "jsonwebtoken";
+import OrderItems from "../models/OrderItems";
+
 
 const get = async (req, res) => {
   try {
     let { id } = req.params;
-    id = id ? id.toString().replace(/\D/g, '') : null;
-
+    // id = id ? id.toString().replace(/\D/g, '') : null;
     if(!id){
       let response = await Cart.findAll({
         order: [[['id', 'ASC'],]]
@@ -24,15 +26,26 @@ const get = async (req, res) => {
         data: response
       });
     }
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Token não informado'
+      })
+    }
+    const token = authorization.split(' ')[1] || null;
+    const decodedToken = jwt.decode(token);
+    
+    let idUser = decodedToken.userId
 
     let response = await Cart.findOne({
-      where: { id }
+      where: { idUser }
     })
 
     if(!response){
       return res.send({
         type: 'error',
-        message: `Não foi encontrado nenhum registro com o id ${id}`
+        message: `voce ainda nao possui itens em seu carrinho :(`
       })
     };
 
@@ -65,7 +78,7 @@ const persist = async (req, res) => {
     const token = authorization.split(' ')[1] || null;
     const decodedToken = jwt.decode(token);
     
-    let idUser = decodedToken.idUser
+    let idUser = decodedToken.userId
 
     if(!idUser || !items) {
       return res.send({
@@ -76,16 +89,13 @@ const persist = async (req, res) => {
     
     let cartUser = await Cart.findOne({
       where: {
-        idUser: id
+        idUser: idUser
       }
     });
     
     // create 
-    if(req.body.update) {
-      return res.send({ message:`nan`})
-    }
     if(!cartUser){
-      let response = await Cart.create( { idUser,  items } );
+      let response = await Cart.create( { idUser,  items: [items]} );
       return res.send({
       type: 'success',
       data: response
@@ -93,10 +103,11 @@ const persist = async (req, res) => {
    }
 
   //  update
-   let updateCart = cartUser.toJSON();
-   updateCart.quantidade = items.quantidade
-   updateCart.quantidade = items.
-   console.log(updateCart);
+  let updateCart = cartUser.toJSON();
+  updateCart.items.push(items)
+  cartUser.items = updateCart.items
+  let response = await cartUser.save()
+
   return res.status(201).send({
     type: 'sucess',
     message: `Registro atualizado com sucesso`,
@@ -109,8 +120,59 @@ const persist = async (req, res) => {
     });
   }
 }
+const remove = async (req, res) => {
+  try {
+    let { items } = req.body;
+    const authorization = req.headers.authorization;
+    
+    if (!authorization) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Token não informado'
+      })
+    }
+
+    const token = authorization.split(' ')[1] || null;
+    const decodedToken = jwt.decode(token);
+    
+    let idUser = decodedToken.userId
+
+    if(!idUser || !items) {
+      return res.send({
+        type: 'error',
+        message: `É necessario informar todos os campos para adicionar o registro`
+      });
+    }
+    
+    let cartUser = await Cart.findOne({
+      where: {
+        idUser: idUser
+      }
+    });
+
+    if(!cartUser){
+      return res.status(200).send({
+        type: 'error',
+        message: `Você esta tentando apagar um registro que não exixte, Atualize a pagina`,
+      })
+    }
+
+  //  update
+  cartUser.items = items
+  cartUser.save()
+  
+
+
+  } catch (error) {
+    return res.send({
+      type: 'error',
+      message: error.message
+    });
+  }
+}
 
 export default {
   get,
-  persist
+  persist,
+  remove
 }

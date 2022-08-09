@@ -54,36 +54,34 @@ const register = async (req, res) => {
     if (userExists) {
       return res.status(200).send({
         type: 'error',
-<<<<<<< HEAD
         message: 'Usuario invalido, tente outro!'
-=======
-        message: 'Não é possivel utilizar esse usuario!'
->>>>>>> 432244cbd69aba346b9ff0086c01e647e33e72f1
       });
     }
+
     userExists = await User.findOne({
       where: {
         cpf
       }
     });
 
-<<<<<<< HEAD
+
     if (userExists) {
       return res.status(200).send({
         type: 'error',
         message: 'Esse cpf ja esta relacionado a outro usuario!'
-=======
-    userExists = await User.findOne({
-      where: {
-        cpf
-      }
-    });
+      });
+    }
+      
+      userExists = await User.findOne({
+        where: {
+          cpf
+        }
+      })
 
     if (userExists) {
       return res.status(200).send({
         type: 'error',
         message: 'CPF invalido, tente novamente'
->>>>>>> 432244cbd69aba346b9ff0086c01e647e33e72f1
       });
     }
     let passwordHash = await bcrypt.hash(password, 10);
@@ -141,13 +139,8 @@ const login = async (req, res) => {
     return res.status(200).send({
       type: 'success',
       message: 'Bem-vindo! Login realizado com sucesso!',
-<<<<<<< HEAD
       token: token,
       typeUser : user.role
-=======
-      token,
-      typeUser: user.role
->>>>>>> 432244cbd69aba346b9ff0086c01e647e33e72f1
     });
 
   } catch (error) {
@@ -275,9 +268,8 @@ const validUser = async (req, res) => {
         message: 'Token não informado'
       })
     }
-
     const token = authorization.split(' ')[1] || null;
-    const decodedToken = jwt.decode(token);
+    let decodedToken = jwt.decode(token);
     
     if (!decodedToken) {
       return res.status(200).send({
@@ -285,7 +277,12 @@ const validUser = async (req, res) => {
         message: 'Você não tem permissão para acessar esse recurso!'
       })
     }
-    
+    // let tokenFind  = await User.findOne({
+    //   where: {
+    //     id: decodedToken.userId
+    //   }
+    // })
+    // decodedToken = jwt.decode(tokenFind.token);
     if (decodedToken.exp < (Date.now() / 1000)) {
       return res.status(200).send({
         type: 'error',
