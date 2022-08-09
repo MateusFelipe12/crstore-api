@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 const get = async (req, res) => {
   try {
     let { id } = req.params;
-
     if(!id){
       const response = await User.findAll({
         order: [['id', 'ASC']]
@@ -55,9 +54,25 @@ const register = async (req, res) => {
     if (userExists) {
       return res.status(200).send({
         type: 'error',
+<<<<<<< HEAD
         message: 'Usuario invalido, tente outro!'
+=======
+        message: 'Não é possivel utilizar esse usuario!'
+>>>>>>> 432244cbd69aba346b9ff0086c01e647e33e72f1
       });
     }
+    userExists = await User.findOne({
+      where: {
+        cpf
+      }
+    });
+
+<<<<<<< HEAD
+    if (userExists) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Esse cpf ja esta relacionado a outro usuario!'
+=======
     userExists = await User.findOne({
       where: {
         cpf
@@ -67,7 +82,8 @@ const register = async (req, res) => {
     if (userExists) {
       return res.status(200).send({
         type: 'error',
-        message: 'Esse cpf ja esta relacionado a outro usuario!'
+        message: 'CPF invalido, tente novamente'
+>>>>>>> 432244cbd69aba346b9ff0086c01e647e33e72f1
       });
     }
     let passwordHash = await bcrypt.hash(password, 10);
@@ -99,7 +115,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     let { username, password } = req.body;
-
+    console.log(req.body);
     let user = await User.findOne({
       where: {
         username
@@ -125,8 +141,13 @@ const login = async (req, res) => {
     return res.status(200).send({
       type: 'success',
       message: 'Bem-vindo! Login realizado com sucesso!',
+<<<<<<< HEAD
       token: token,
       typeUser : user.role
+=======
+      token,
+      typeUser: user.role
+>>>>>>> 432244cbd69aba346b9ff0086c01e647e33e72f1
     });
 
   } catch (error) {
@@ -247,7 +268,7 @@ const validUser = async (req, res) => {
   try {
 
     const authorization = req.headers.authorization;
-
+    console.log(authorization);
     if (!authorization) {
       return res.status(200).send({
         type: 'error',
