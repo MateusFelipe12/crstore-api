@@ -281,6 +281,7 @@ const validUser = async (req, res) => {
       }
     })
     decodedToken = jwt.decode(tokenFind.token);
+    
     if (decodedToken.exp < (Date.now() / 1000)) {
       return res.status(200).send({
         type: 'error',

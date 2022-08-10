@@ -22,7 +22,7 @@ const get = async (req, res) => {
       })
     }
     let id = decodedToken.userId  
-    let response = await Address.findOne({
+    let response = await Address.findAll({
       where: { idUser: id }
     })
 
@@ -48,9 +48,26 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
   try {
-    let {id, idUser, city, district, address, complement, number, description} = req.body;
+    let {id, city, district, address, complement, number, description} = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
     
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Token não informado'
+      })
+    }
+    const token = authorization.split(' ')[1] || null;
+    let decodedToken = jwt.decode(token);
+    
+    if (!decodedToken) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Você não tem permissão para acessar esse recurso!'
+      })
+    }
+    let idUser = decodedToken.userId
     let idUserExist = await User.findOne({
       where: {id: idUser}
     })
@@ -74,7 +91,7 @@ const persist = async (req, res) => {
       let response = await Address.create( { idUser, city, district, address, complement, number, description } );
       return res.send({
       type: 'success',
-      data: response
+      data: response 
     });
    }
 
