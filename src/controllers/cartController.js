@@ -1,7 +1,6 @@
 import Cart from "../models/Cart";
-import cartRoute from "../routes/cartRoute";
 import jwt from "jsonwebtoken";
-import OrderItems from "../models/OrderItems";
+
 
 
 const get = async (req, res) => {
@@ -63,7 +62,7 @@ const get = async (req, res) => {
   }
 }
 
-const persist = async (req, res) => {
+const persistCart = async (req, res) => {
   try {
     let { items } = req.body;
     const authorization = req.headers.authorization;
@@ -120,7 +119,7 @@ const persist = async (req, res) => {
     });
   }
 }
-const remove = async (req, res) => {
+const persistItensCart = async (req, res) => {
   try {
     let { items } = req.body;
     const authorization = req.headers.authorization;
@@ -159,8 +158,13 @@ const remove = async (req, res) => {
 
   //  update
   cartUser.items = items
-  cartUser.save()
-  
+  await cartUser.save()
+
+  return res.send({
+    type: 'success',
+    message: `registro atualizado com sucesso`,
+    data: cartUser
+  })
 
 
   } catch (error) {
@@ -173,6 +177,6 @@ const remove = async (req, res) => {
 
 export default {
   get,
-  persist,
-  remove
+  persistCart,
+  persistItensCart
 }

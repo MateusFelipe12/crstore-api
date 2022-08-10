@@ -113,7 +113,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   try {
     let { username, password } = req.body;
-    console.log(req.body);
     let user = await User.findOne({
       where: {
         username
@@ -261,7 +260,6 @@ const validUser = async (req, res) => {
   try {
 
     const authorization = req.headers.authorization;
-    console.log(authorization);
     if (!authorization) {
       return res.status(200).send({
         type: 'error',
@@ -277,12 +275,12 @@ const validUser = async (req, res) => {
         message: 'Você não tem permissão para acessar esse recurso!'
       })
     }
-    // let tokenFind  = await User.findOne({
-    //   where: {
-    //     id: decodedToken.userId
-    //   }
-    // })
-    // decodedToken = jwt.decode(tokenFind.token);
+    let tokenFind  = await User.findOne({
+      where: {
+        id: decodedToken.userId
+      }
+    })
+    decodedToken = jwt.decode(tokenFind.token);
     if (decodedToken.exp < (Date.now() / 1000)) {
       return res.status(200).send({
         type: 'error',

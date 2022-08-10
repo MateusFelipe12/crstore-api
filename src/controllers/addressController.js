@@ -1,32 +1,29 @@
 import Address from "../models/Address";
 import User from "../models/User";
+import jwt from "jsonwebtoken";
+
 
 const get = async (req, res) => {
   try {
-    let { id } = req.params;
-    id = id ? id.toString().replace(/\D/g, '') : null;
-
-    if(!id){
-      let response = await Address.findAll({
-        order: [[['id', 'ASC'],]]
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Token não informado'
       })
-
-      if(!response.length){
-        return res.send({
-          type: 'error',
-          message: `Não foi encontrado nenhum registro`
-        })
-      };
-
-      return res.send({
-        type: 'success',      
-        message: 'Registros recuperados com sucesso', 
-        data: response
-      });
     }
-
+    const token = authorization.split(' ')[1] || null;
+    let decodedToken = jwt.decode(token);
+    
+    if (!decodedToken) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Você não tem permissão para acessar esse recurso!'
+      })
+    }
+    let id = decodedToken.userId  
     let response = await Address.findOne({
-      where: { id }
+      where: { idUser: id }
     })
 
     if(!response){
