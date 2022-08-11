@@ -62,7 +62,7 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
 try {
-  let { idItems, quantity, valueUnit } = req.body;
+  let { items, addres, payment } = req.body;
   // id = id ? id.toString().replace(/\D/g, '') : null;
   
     const authorization = req.headers.authorization;
@@ -76,20 +76,8 @@ try {
     const decodedToken = jwt.decode(token);
     
     let idUser = decodedToken.userId
-    let addresses = await Address.findAll({
-      where: {
-        idUser
-      }
-    })
-    
-    if(!addresses) {
-      return res.send({
-        type: "error",
-        message: `Não existe nenhum endereço cadastrado`
-      })
-    }
-    
-    let {city, district, address, complement, number, description} = addresses[0].dataValues
+
+    let {city, district, address, complement, number, description} = addres
     let response = await Order.create({
       idUserCustumer: idUser,
       city,
@@ -97,12 +85,13 @@ try {
       address,
       complement,
       number,
+      IdPaymentMethod: payment.id,
       description: description,
       Description: description
     })
 
     let valorTotal = 0
-    for(let idItem of idItems ) {
+    for(let idItem of items.id ) {
       let item = Item.findOne({
         where: {
           id: idItem
@@ -127,9 +116,9 @@ try {
     response.valueTotal = valorTotal;
     response.save();
 
-    let items = await response.getItems()
+    let itens = await response.getItems()
     response = response.toJSON()
-    response.items = items;
+    response.items = itens;
 
     return res.send(response)
   

@@ -110,13 +110,13 @@ const persist = async (req, res) => {
   }
 
   let dados = req.body
-  Object.keys(dados).forEach(campo => response[campo] = dados[campo] )
+  Object.keys(dados).forEach(campo => campo !=id ? response[campo] = dados[campo]: null);
 
   await response.save();
   return res.status(201).send({
     type: 'sucess',
     message: `Registro atualizado com sucesso`,
-    date: response
+    data: response
   })
   
 

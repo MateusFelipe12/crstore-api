@@ -14,7 +14,7 @@ const Cart = sequelize.define(
     },
     items: {
       type: DataTypes.JSONB,
-      allowNull: false,
+      allowNull: false, 
     },
   },
   {

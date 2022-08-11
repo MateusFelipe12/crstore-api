@@ -37,8 +37,8 @@ const OrderItems = sequelize.define(
 );
 
 Order.belongsToMany(Item, { 
-  through: OrderItems, //tabela/modelo associativa
-  as: 'items', //'Livros'
+  through: OrderItems, 
+  as: 'items', 
   foreignKey: {
     name: 'idOrder',
     field: 'id_order',
