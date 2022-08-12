@@ -15,7 +15,7 @@ const Item = sequelize.define(
       allowNull: false
     },
     price: {
-      type: DataTypes.NUMERIC(15,2),
+      type: DataTypes.NUMERIC(15, 2),
       allowNull: false
     },
     img: {
@@ -31,7 +31,7 @@ const Item = sequelize.define(
     updatedAt: 'updated_at'
   }
 );
-Item.belongsTo( Category, {
+Item.belongsTo(Category, {
   as: 'Category',
   onUpdate: 'NO ACTION',
   onDelete: 'NO ACTION',

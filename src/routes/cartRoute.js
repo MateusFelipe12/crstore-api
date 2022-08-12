@@ -6,5 +6,7 @@ export default (app) => {
 	app.get('/cart/:id', controller.get)
 	app.post('/cart/persist', controller.persistCart)
 	app.post('/cart/remove', controller.persistItensCart)
+	app.post('/cart/destroy', controller.destroyCart)
+
 
 }

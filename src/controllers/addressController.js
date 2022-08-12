@@ -14,19 +14,19 @@ const get = async (req, res) => {
     }
     const token = authorization.split(' ')[1] || null;
     let decodedToken = jwt.decode(token);
-    
+
     if (!decodedToken) {
       return res.status(200).send({
         type: 'error',
         message: 'Você não tem permissão para acessar esse recurso!'
       })
     }
-    let id = decodedToken.userId  
+    let id = decodedToken.userId
     let response = await Address.findAll({
       where: { idUser: id }
     })
 
-    if(!response){
+    if (!response) {
       return res.send({
         type: 'error',
         message: `Não foi encontrado nenhum registro com o id ${id}`
@@ -39,7 +39,7 @@ const get = async (req, res) => {
       data: response
     });
   } catch (error) {
-    res.send({
+    return res.send({
       type: 'error',
       message: error.message
     });
@@ -48,9 +48,9 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
   try {
-    let {id, city, district, address, complement, number, description} = req.body;
+    let { id, city, district, address, complement, number, description } = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
-    
+
     const authorization = req.headers.authorization;
     if (!authorization) {
       return res.status(200).send({
@@ -60,7 +60,7 @@ const persist = async (req, res) => {
     }
     const token = authorization.split(' ')[1] || null;
     let decodedToken = jwt.decode(token);
-    
+
     if (!decodedToken) {
       return res.status(200).send({
         type: 'error',
@@ -69,15 +69,15 @@ const persist = async (req, res) => {
     }
     let idUser = decodedToken.userId
     let idUserExist = await User.findOne({
-      where: {id: idUser}
+      where: { id: idUser }
     })
-    if(!idUserExist){
+    if (!idUserExist) {
       return res.send({
         type: 'error',
         message: `É necessario informar um usuario valido`
       });
     }
-    if(!idUser ||!city || !district || !address ||!complement || !number) {
+    if (!idUser || !city || !district || !address || !complement || !number) {
       return res.send({
         type: 'error',
         message: `É necessario informar todos os campos para adicionar o registro`
@@ -87,38 +87,38 @@ const persist = async (req, res) => {
     description = description ? description : '';
 
     // create 
-    if(!id){
-      let response = await Address.create( { idUser, city, district, address, complement, number, description } );
+    if (!id) {
+      let response = await Address.create({ idUser, city, district, address, complement, number, description });
       return res.send({
-      type: 'success',
-      data: response 
-    });
-   }
-
-  //  update 
-  let response = await Address.findOne({
-    where: {
-      id
+        type: 'success',
+        data: response
+      });
     }
-  });
 
-  if(!response){
-    return res.status(400).send({
-      type: 'error',
-      message:`Nao existe nenhum registro com o id ${id}`
+    //  update 
+    let response = await Address.findOne({
+      where: {
+        id
+      }
+    });
+
+    if (!response) {
+      return res.status(400).send({
+        type: 'error',
+        message: `Nao existe nenhum registro com o id ${id}`
+      })
+    }
+
+    let dados = req.body
+    Object.keys(dados).forEach(campo => campo != id ? response[campo] = dados[campo] : null);
+
+    await response.save();
+    return res.status(201).send({
+      type: 'sucess',
+      message: `Registro atualizado com sucesso`,
+      data: response
     })
-  }
 
-  let dados = req.body
-  Object.keys(dados).forEach(campo => campo !=id ? response[campo] = dados[campo]: null);
-
-  await response.save();
-  return res.status(201).send({
-    type: 'sucess',
-    message: `Registro atualizado com sucesso`,
-    data: response
-  })
-  
 
   } catch (error) {
     return res.send({
@@ -130,12 +130,12 @@ const persist = async (req, res) => {
 
 const destroy = async (req, res) => {
   try {
-    let {id} = req.body;
+    let { id } = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
 
-    if(!id){
+    if (!id) {
       return res.send({
-        type:  "error",
+        type: "error",
         message: `Informe um id valido`
       })
     }
@@ -143,13 +143,13 @@ const destroy = async (req, res) => {
     let response = await Address.findOne({
       where: { id }
     })
-    if(!response){
+    if (!response) {
       return res.send({
-        type:  "error",
+        type: "error",
         message: `Não existe nenhum registro com o id ${id}`
       })
     }
-    
+
     await Address.destroy({
       where: { id }
     })

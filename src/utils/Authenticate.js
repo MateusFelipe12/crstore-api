@@ -14,7 +14,7 @@ export default async (req, res, next) => {
 
     const token = authorization.split(' ')[1] || null;
     const decodedToken = jwt.decode(token);
-    
+
     if (!decodedToken) {
       return res.status(200).send({
         type: 'error',
@@ -58,7 +58,7 @@ export default async (req, res, next) => {
   } catch (error) {
     return res.status(200).send({
       type: 'error',
-      message:  error.message
+      message: error.message
     })
   }
 };

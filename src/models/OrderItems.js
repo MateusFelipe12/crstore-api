@@ -18,11 +18,11 @@ const OrderItems = sequelize.define(
       defaultValue: 1
     },
     valueUnit: {
-      type: DataTypes.NUMERIC(15,2),
+      type: DataTypes.NUMERIC(15, 2),
       allowNull: false,
     },
     valueTotal: {
-      type: DataTypes.NUMERIC(15,2),
+      type: DataTypes.NUMERIC(15, 2),
       allowNull: false,
     }
   },
@@ -36,14 +36,16 @@ const OrderItems = sequelize.define(
   }
 );
 
-Order.belongsToMany(Item, { 
-  through: OrderItems, 
-  as: 'items', 
+Order.belongsToMany(Item, {
+  through: OrderItems,
+  as: 'items',
+  onUpdate: 'NO ACTION',
+  onDelete: 'NO ACTION',
   foreignKey: {
     name: 'idOrder',
     field: 'id_order',
     allowNull: false
-  } 
+  }
 });
 
 Item.belongsToMany(Order, {

@@ -15,7 +15,7 @@ const Address = sequelize.define(
       allowNull: false,
       unique: false
     },
-    district:{
+    district: {
       type: DataTypes.STRING(100),
       allowNull: false,
       unique: false
@@ -25,7 +25,7 @@ const Address = sequelize.define(
       allowNull: false,
       unique: false
     },
-    complement:{
+    complement: {
       type: DataTypes.STRING(100),
       allowNull: false,
       unique: false
@@ -49,7 +49,7 @@ const Address = sequelize.define(
   }
 );
 
-Address.belongsTo( User, {
+Address.belongsTo(User, {
   as: 'User',
   onUpdate: 'NO ACTION',
   onDelete: 'NO ACTION',

@@ -9,41 +9,41 @@ import jwt from "jsonwebtoken";
 
 const get = async (req, res) => {
   try {
-    let {id} = req.params;
-    id = id ? id.toString().replace(/\D/g, '') : null;
-
-    if(!id) {
-       let response = await Order.findAll({
-        order: [[['id', 'ASC'],]]
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Token não informado'
       })
+    }
+    const token = authorization.split(' ')[1] || null;
+    let decodedToken = jwt.decode(token);
 
-      if(!response.length){
-        return res.send({
-          type: 'error',
-          message: `Não foi encontrado nenhum registro`
-        })
-      };
-
-      return res.send({
-        type: 'success',      
-        message: 'Registros recuperados com sucesso', 
-        data: response
-      });
+    if (!decodedToken) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Você não tem permissão para acessar esse recurso!'
+      })
     }
 
-    let response = await Order.findOne({
-      where: { id }
-    })
 
-    if(!response){
+    if (decodedToken.exp < (Date.now() / 1000)) {
+      return res.status(200).send({
+        type: 'error',
+        message: 'Sua sessão expirou! Faça login novamente'
+      })
+    }
+    let userId = decodedToken.userId
+    let response = await Order.findAll({
+      where: { idUserCustumer: userId }
+    })
+    if (!response) {
       return res.send({
         type: 'error',
-        message: `Não foi encontrado nenhum registro com o id ${id}`
+        message: `Não foi encontrado nenhum registro com o id ${userId}`
       })
     };
-    let items = await response.getItems()
-    response = response.toJSON()
-    response.items = items;
+
 
     return res.send({
       type: 'success',
@@ -57,14 +57,14 @@ const get = async (req, res) => {
       message: error.message
     })
   }
-} 
+}
 
 
 const persist = async (req, res) => {
-try {
-  let { items, addres, payment } = req.body;
-  // id = id ? id.toString().replace(/\D/g, '') : null;
-  
+  try {
+    let { items, addres, payment } = req.body;
+    // id = id ? id.toString().replace(/\D/g, '') : null;
+
     const authorization = req.headers.authorization;
     if (!authorization) {
       return res.status(200).send({
@@ -74,10 +74,9 @@ try {
     }
     const token = authorization.split(' ')[1] || null;
     const decodedToken = jwt.decode(token);
-    
-    let idUser = decodedToken.userId
 
-    let {city, district, address, complement, number, description} = addres
+    let idUser = decodedToken.userId
+    let { city, district, address, complement, number, description } = addres
     let response = await Order.create({
       idUserCustumer: idUser,
       city,
@@ -85,16 +84,16 @@ try {
       address,
       complement,
       number,
-      IdPaymentMethod: payment.id,
+      IdPaymentMethod: payment,
       description: description,
       Description: description
     })
 
     let valorTotal = 0
-    for(let idItem of items.id ) {
-      let item = Item.findOne({
+    for (let idItem of items) {
+      let item = await Item.findOne({
         where: {
-          id: idItem
+          id: idItem[0]
         }
       })
       if (!item) {
@@ -105,13 +104,14 @@ try {
         })
       }
       let valor = (await OrderItems.create({
-        idItem,
-        quantity,
-        valueUnit,
-        valueTotal: valueUnit * quantity,
+        idItem: idItem[0],
+        quantity: idItem[4],
+        valueUnit: idItem[3],
+        valueTotal: idItem[3] * idItem[4],
         idOrder: response.id
       })).valueTotal
-      valorTotal += valor;
+
+      valorTotal += Number(valor);
     }
     response.valueTotal = valorTotal;
     response.save();
@@ -120,21 +120,25 @@ try {
     response = response.toJSON()
     response.items = itens;
 
-    return res.send(response)
-  
-} catch (error) {
-  return res.send({
-    type: "error",
-    message: error.message
-  })
-}
+    return res.send({
+      type: "success",
+      message: `Compra efetuada com sucesso, Acesse pedidos para conferir`,
+      data: response
+    })
+
+  } catch (error) {
+    return res.send({
+      type: "error",
+      message: error.message
+    })
+  }
 }
 
 const destroy = async (req, res) => {
   try {
     let { id } = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
-    
+
     if (!id) {
       return res.send({
         type: "error",
@@ -146,13 +150,13 @@ const destroy = async (req, res) => {
       where: { id }
     })
 
-    if(!response){
+    if (!response) {
       return res.send({
-        type:  "error",
+        type: "error",
         message: `Não existe nenhum registro com o id ${id}`
       })
     }
-    
+
     await Order.destroy({
       where: { id }
     })

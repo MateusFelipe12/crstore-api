@@ -5,11 +5,11 @@ import jwt from "jsonwebtoken";
 const get = async (req, res) => {
   try {
     let { id } = req.params;
-    if(!id){
+    if (!id) {
       const response = await User.findAll({
         order: [['id', 'ASC']]
       });
-      if(!response.length){
+      if (!response.length) {
         return res.send({
           type: 'error',
           message: `Não foi encontrado nenhum registro`
@@ -23,7 +23,7 @@ const get = async (req, res) => {
     }
 
     const response = await User.findOne({
-      where: {id}
+      where: { id }
     });
 
     return res.status(200).send({
@@ -36,7 +36,7 @@ const get = async (req, res) => {
     return res.status(200).send({
       type: 'error',
       message: 'Ops! Ocorreu um erro!',
-      data:  error.message
+      data: error.message
     });
   }
 }
@@ -71,12 +71,12 @@ const register = async (req, res) => {
         message: 'Esse cpf ja esta relacionado a outro usuario!'
       });
     }
-      
-      userExists = await User.findOne({
-        where: {
-          cpf
-        }
-      })
+
+    userExists = await User.findOne({
+      where: {
+        cpf
+      }
+    })
 
     if (userExists) {
       return res.status(200).send({
@@ -139,76 +139,76 @@ const login = async (req, res) => {
       type: 'success',
       message: 'Bem-vindo! Login realizado com sucesso!',
       token: token,
-      typeUser : user.role
+      typeUser: user.role
     });
 
   } catch (error) {
     return res.status(200).send({
       type: 'error',
       message: 'Ops! Ocorreu um erro!',
-      data:  error.message
+      data: error.message
     });
   }
 }
 
 const update = async (req, res) => {
   try {
-    let dados  = req.body;
-    
+    let dados = req.body;
+
     let user = await User.findOne({
-      where: {username: dados.username}
+      where: { username: dados.username }
     })
-    
-    if(!user){
+
+    if (!user) {
       return res.status(200).send({
         type: 'error',
         message: "Username Invalido"
       })
     }
-    
+
     let name = await User.findOne({
-      where: {name: dados.name}
+      where: { name: dados.name }
     })
-    if(!name){
+    if (!name) {
       return res.status(200).send({
         type: 'error',
         message: "Name Invalido"
       })
     }
-    
+
     let cpf = await User.findOne({
-      where: {cpf: dados.cpf}
+      where: { cpf: dados.cpf }
     })
-    if(!cpf){
+    if (!cpf) {
       return res.status(200).send({
         type: 'error',
         message: "cpf Invalido"
       })
     }
-    
+
     let phone = await User.findOne({
-      where: {phone: dados.phone}
+      where: { phone: dados.phone }
     })
-    if(!phone){
+    if (!phone) {
       return res.status(200).send({
         type: 'error',
         message: "Telefone Invalido"
       })
     }
 
-    if(user.dataValues.username == dados.username  && name.dataValues.username == dados.username   &&
-      cpf.dataValues.username == dados.username  && phone.dataValues.username == dados.username) {
-        return res.status(200).send({
-          type: "success",
-          message: `todos os campos coincidem`, 
-          data: user.dataValues.id
-        })
-      } 
+    if (user.dataValues.username == dados.username && name.dataValues.username == dados.username &&
+      cpf.dataValues.username == dados.username && phone.dataValues.username == dados.username) {
       return res.status(200).send({
-        type: "error",
-        message: `Ocorreu um erro ao atualizar a senha`,
+        type: "success",
+        message: `todos os campos coincidem`,
         data: user.dataValues.id
       })
+    }
+    return res.status(200).send({
+      type: "error",
+      message: `Ocorreu um erro ao atualizar a senha`,
+      data: user.dataValues.id
+    })
   } catch (error) {
     return res.status(200).send({
       type: 'error',
@@ -219,9 +219,9 @@ const update = async (req, res) => {
 
 const newPassword = async (req, res) => {
   try {
-    let {password, id} = req.body
+    let { password, id } = req.body
 
-    if(!id || !password){
+    if (!id || !password) {
       return res.send({
         type: "error",
         message: `Informe todos os campos para atualizar a nova senha`
@@ -234,7 +234,7 @@ const newPassword = async (req, res) => {
       }
     })
 
-    if(!response) {
+    if (!response) {
       return res.send({
         type: 'error',
         message: "usuario nao encontrado"
@@ -259,7 +259,6 @@ const newPassword = async (req, res) => {
 const validUser = async (req, res) => {
   try {
     const authorization = req.headers.authorization;
-    console.log(authorization);
     if (!authorization) {
       return res.status(200).send({
         type: 'error',
@@ -268,15 +267,15 @@ const validUser = async (req, res) => {
     }
     const token = authorization.split(' ')[1] || null;
     let decodedToken = jwt.decode(token);
-    
+
     if (!decodedToken) {
       return res.status(200).send({
         type: 'error',
         message: 'Você não tem permissão para acessar esse recurso!'
       })
     }
-    
-    
+
+
     if (decodedToken.exp < (Date.now() / 1000)) {
       return res.status(200).send({
         type: 'error',
@@ -296,17 +295,17 @@ const validUser = async (req, res) => {
         message: 'Usuário não encontrado'
       })
     }
-    if (user.role != 'Admin') {
-      return res.status(200).send({
-        type: 'error',
-        message: 'Você não tem permissão para acessar esse recurso!'
-      })
-    } 
+    // if (user.role != 'Admin') {
+    //   return res.status(200).send({
+    //     type: 'error',
+    //     message: 'Você não tem permissão para acessar esse recurso!'
+    //   })
+    // } 
 
     return res.status(200).send({
       type: 'success',
       message: `Seja bem vindo ${user.name}`,
-      data: user
+      data: user.role
     })
   } catch (error) {
     return res.status(200).send({

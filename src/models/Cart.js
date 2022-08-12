@@ -14,7 +14,7 @@ const Cart = sequelize.define(
     },
     items: {
       type: DataTypes.JSONB,
-      allowNull: false, 
+      allowNull: false,
     },
   },
   {
@@ -27,7 +27,7 @@ const Cart = sequelize.define(
   }
 );
 
-Cart.belongsTo( User, {
+Cart.belongsTo(User, {
   as: 'User',
   onUpdate: 'NO ACTION',
   onDelete: 'NO ACTION',

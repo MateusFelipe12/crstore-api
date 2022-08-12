@@ -5,12 +5,12 @@ const get = async (req, res) => {
     let { id } = req.params;
     id = id ? id.toString().replace(/\D/g, '') : null;
 
-    if(!id){
+    if (!id) {
       let response = await PaymentMethod.findAll({
         order: [[['id', 'ASC'],]]
       })
 
-      if(!response.length){
+      if (!response.length) {
         return res.send({
           type: 'error',
           message: `Não foi encontrado nenhum registro`
@@ -18,8 +18,8 @@ const get = async (req, res) => {
       };
 
       return res.send({
-        type: 'success',      
-        message: 'Registros recuperados com sucesso', 
+        type: 'success',
+        message: 'Registros recuperados com sucesso',
         data: response
       });
     }
@@ -28,7 +28,7 @@ const get = async (req, res) => {
       where: { id }
     })
 
-    if(!response){
+    if (!response) {
       return res.send({
         type: 'error',
         message: `Não foi encontrado nenhum registro com o id ${id}`
@@ -41,7 +41,7 @@ const get = async (req, res) => {
       data: response
     });
   } catch (error) {
-    res.send({
+    return res.send({
       type: 'error',
       message: error.message
     });
@@ -50,49 +50,49 @@ const get = async (req, res) => {
 
 const persist = async (req, res) => {
   try {
-    let {id, type } = req.body;
+    let { id, type } = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
-    
-    if(!type) {
+
+    if (!type) {
       return res.send({
         type: 'error',
         message: `É necessario informar todos os campos para adicionar o registro`
       });
     }
-    
+
     // create 
-    if(!id){
-      let response = await PaymentMethod.create( { type } );
+    if (!id) {
+      let response = await PaymentMethod.create({ type });
       return res.send({
-      type: 'success',
-      data: response
-    });
-   }
-
-  //  update 
-  let response = await PaymentMethod.findOne({
-    where: {
-      id
+        type: 'success',
+        data: response
+      });
     }
-  });
 
-  if(!response){
-    return res.status(400).send({
-      type: 'error',
-      message:`Nao existe nenhum registro com o id ${id}`
+    //  update 
+    let response = await PaymentMethod.findOne({
+      where: {
+        id
+      }
+    });
+
+    if (!response) {
+      return res.status(400).send({
+        type: 'error',
+        message: `Nao existe nenhum registro com o id ${id}`
+      })
+    }
+
+    let dados = req.body
+    Object.keys(dados).forEach(campo => response[campo] = dados[campo])
+
+    await response.save();
+    return res.status(201).send({
+      type: 'sucess',
+      message: `Registro atualizado com sucesso`,
+      date: response
     })
-  }
 
-  let dados = req.body
-  Object.keys(dados).forEach(campo => response[campo] = dados[campo] )
-
-  await response.save();
-  return res.status(201).send({
-    type: 'sucess',
-    message: `Registro atualizado com sucesso`,
-    date: response
-  })
-  
 
   } catch (error) {
     return res.send({
@@ -104,12 +104,12 @@ const persist = async (req, res) => {
 
 const destroy = async (req, res) => {
   try {
-    let {id} = req.body;
+    let { id } = req.body;
     id = id ? id.toString().replace(/\D/g, '') : null;
 
-    if(!id){
+    if (!id) {
       return res.send({
-        type:  "error",
+        type: "error",
         message: `Informe um id valido`
       })
     }
@@ -117,13 +117,13 @@ const destroy = async (req, res) => {
     let response = await PaymentMethod.findOne({
       where: { id }
     })
-    if(!response){
+    if (!response) {
       return res.send({
-        type:  "error",
+        type: "error",
         message: `Não existe nenhum registro com o id ${id}`
       })
     }
-    
+
     await PaymentMethod.destroy({
       where: { id }
     })

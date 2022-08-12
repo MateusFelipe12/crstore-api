@@ -12,14 +12,14 @@ const Order = sequelize.define(
       autoIncrement: true
     },
     valueTotal: {
-      type: DataTypes.NUMERIC(15,2)
+      type: DataTypes.NUMERIC(15, 2)
     },
     city: {
       type: DataTypes.STRING(100),
       allowNull: false,
       unique: false
     },
-    district:{
+    district: {
       type: DataTypes.STRING(100),
       allowNull: false,
       unique: false
@@ -29,7 +29,7 @@ const Order = sequelize.define(
       allowNull: false,
       unique: false
     },
-    complement:{
+    complement: {
       type: DataTypes.STRING(100),
       allowNull: false,
       unique: false
